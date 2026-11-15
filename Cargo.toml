@@ -1,0 +1,16 @@
+[package]
+name = "cf-sosilol"
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+authors = ["SegfaultSommeliers"]
+repository = "https://github.com/SegfaultSommeliers/sosilol"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+worker = { version = "0.9", features = ['http', 'axum'] }
+worker-macros = { version = "0.9", features = ['http'] }
+axum = { version = "0.8", default-features = false }
+tower-service = "0.3.3"
