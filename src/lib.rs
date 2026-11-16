@@ -1,20 +1,28 @@
-use axum::{routing::get, Router};
-use tower_service::Service;
-use worker::*;
+mod app;
+mod layouts;
+mod models;
+mod pages;
 
-fn router() -> Router {
-    Router::new().route("/", get(root))
-}
+use crate::app::App;
+use anyhow::Result;
+use axum::{
+    body::Body,
+    response::Response,
+};
+use worker::{
+    Context,
+    Env,
+    HttpRequest,
+    event,
+};
 
 #[event(fetch)]
 async fn fetch(
     req: HttpRequest,
     _env: Env,
     _ctx: Context,
-) -> Result<axum::http::Response<axum::body::Body>> {
-    Ok(router().call(req).await?)
-}
+) -> Result<Response<Body>> {
+    let app = App::new();
 
-pub async fn root() -> &'static str {
-    "Hello Axum!"
+    Ok(app.call(req).await?)
 }

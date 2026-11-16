@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 authors = ["SegfaultSommeliers"]
-repository = "https://github.com/SegfaultSommeliers/sosilol"
+repository = "https://github.com/SegfaultSommeliers/cf-sosilol"
 
 [lib]
 crate-type = ["cdylib"]
@@ -12,5 +12,7 @@ crate-type = ["cdylib"]
 [dependencies]
 worker = { version = "0.9", features = ['http', 'axum'] }
 worker-macros = { version = "0.9", features = ['http'] }
-axum = { version = "0.8", default-features = false }
+axum = { version = "0.8", default-features = false, features = ["json"] }
 tower-service = "0.3.3"
+anyhow = "1.0.104"
+maud = { version = "0.27.0", features = ["axum"] }

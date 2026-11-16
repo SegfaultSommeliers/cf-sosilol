@@ -1,0 +1,144 @@
+/* Fonts */
+@import "@fontsource/montserrat/400.css";
+@import "@fontsource/ubuntu-mono/400.css";
+@import "material-icons/iconfont/filled.css";
+
+/* UI Framework */
+@import "materialize-css/dist/css/materialize.css";
+
+/* Syntax highlighting */
+@import "highlight.js/styles/atom-one-dark.css";
+
+/* Icons */
+@import "@fortawesome/fontawesome-free/css/all.css";
+
+/* Common styles */
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+html, body {
+    overflow: hidden;
+    height: 100%;
+}
+
+textarea {
+    font-family: 'Ubuntu Mono', monospace;
+    outline: none;
+    border: none;
+    background-color: #121212 !important;
+    color: white;
+    padding: 15px;
+    font-size: 18px;
+    resize: none;
+    height: calc(100vh - 64px);
+    white-space: pre;
+    tab-size: 4;
+    overflow-x: scroll;
+}
+
+.default-section {
+    font-family: 'Ubuntu Mono', monospace;
+    background-color: #121212 !important;
+    color: white;
+    white-space: pre;
+    height: 100vh;
+    padding: 15px;
+    font-size: 18px;
+    overflow: scroll;
+}
+
+.code-view > div {
+    padding: 0;
+}
+
+.avatar {
+    vertical-align: middle;
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+}
+
+.code-view * {
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 18px;
+}
+
+.line-numbers {
+    width: 20px;
+    background: #1e1e1e !important;
+    padding-top: 15px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.line-numbers span {
+    counter-increment: linenumber;
+}
+
+.line-numbers span::before {
+    content: counter(linenumber);
+    display: block;
+    color: #7193bb;
+}
+
+.editor {
+    display: flex;
+    width: 100vw;
+}
+
+/* nav */
+.nav-brand-wrapper {
+    background-color: #1e1e1e;
+}
+
+.nav-brand-logo {
+    margin-left: 10px;
+}
+
+/* profile page */
+.profile-header {
+    text-align: center;
+    user-select: none;
+}
+
+.profile-avatar-placeholder {
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #676a6d;
+}
+
+.profile-pastes {
+    text-align: center;
+    user-select: none;
+}
+
+.profile-pastes-empty,
+.profile-pastes-title {
+    color: #676a6d;
+}
+
+.profile-collection {
+    outline: none !important;
+    border: none !important;
+}
+
+/* main / editor page */
+.save-fab {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 15px;
+}
+
+.save-fab-icon {
+    font-size: 24px;
+}
+
+.editor-textarea {
+    width: 100%;
+}
