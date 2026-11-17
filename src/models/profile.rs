@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2026 SegfaultSommeliers
+//
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 use crate::models::Paste;
 
 pub struct Profile<'a> {

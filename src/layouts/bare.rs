@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2025 Konstantin Konovalov
+// SPDX-FileCopyrightText: 2026 SegfaultSommeliers
+//
+// SPDX-License-Identifier: MIT
+
 use maud::{
     DOCTYPE,
     Markup,

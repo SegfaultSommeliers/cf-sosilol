@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2025 Konstantin Konovalov
+// SPDX-FileCopyrightText: 2026 SegfaultSommeliers
+//
+// SPDX-License-Identifier: MIT
+
 import "materialize-css/dist/js/materialize.min.js";
 import hljs from "highlight.js";
 import Alpine from "@alpinejs/csp";
