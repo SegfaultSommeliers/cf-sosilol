@@ -3,6 +3,10 @@ version = 1
 [[annotations]]
 path = [
     "src/app.rs",
+    "src/auth.rs",
+    "src/auth/github.rs",
+    "src/auth/pkce.rs",
+    "src/auth/provider.rs",
     "src/layouts.rs",
     "src/lib.rs",
     "src/models.rs",

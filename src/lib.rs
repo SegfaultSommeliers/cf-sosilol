@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 mod app;
+mod auth;
 mod layouts;
 mod models;
 mod pages;
