@@ -7,6 +7,7 @@ mod auth;
 mod layouts;
 mod models;
 mod pages;
+mod paste;
 
 use crate::app::App;
 use anyhow::Result;

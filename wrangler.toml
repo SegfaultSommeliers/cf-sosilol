@@ -11,3 +11,13 @@ run_worker_first = ["/*", "!/assets/*"]
 
 [build]
 command = "cargo install -q \"worker-build@^0.9\" && worker-build --release --panic-unwind"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "pastes"
+database_id = "31422626-b9f6-45aa-b6a3-727698834786"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+bucket_name = "pastes"
+binding = "BUCKET"

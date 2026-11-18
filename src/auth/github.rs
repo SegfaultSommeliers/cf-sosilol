@@ -27,7 +27,7 @@ impl<'a> Github<'a> {
     }
 }
 
-impl<'a> Provider for Github<'a> {
+impl Provider for Github<'_> {
     fn get_auth_url(
         &self,
         code_challenge: &str,
@@ -39,6 +39,7 @@ impl<'a> Provider for Github<'a> {
         let scope = scope.join(" ");
 
         let params = [
+            ("client_id", self.client_id),
             ("redirect_uri", redirect_uri),
             ("response_type", "code"),
             ("state", state),

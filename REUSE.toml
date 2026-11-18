@@ -13,6 +13,8 @@ path = [
     "src/models/paste.rs",
     "src/models/profile.rs",
     "src/pages.rs",
+    "src/paste.rs",
+    "src/paste/**/*.rs",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 SegfaultSommeliers"
@@ -37,6 +39,7 @@ SPDX-License-Identifier = "MIT"
 
 [[annotations]]
 path = [
+    ".dev.vars.example",
     ".github/workflows/deploy.yml",
     ".gitignore",
     "Cargo.toml",
@@ -57,3 +60,10 @@ precedence = "aggregate"
 SPDX-FileCopyrightText = "NONE"
 SPDX-License-Identifier = "CC0-1.0"
 
+[[annotations]]
+path = [
+    "migrations/**/*.sql",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 SegfaultSommeliers"
+SPDX-License-Identifier = "MIT OR Apache-2.0"
