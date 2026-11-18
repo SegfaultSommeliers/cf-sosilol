@@ -30,7 +30,7 @@ path = [
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = [
-    "2025 Konstantin Konovalov",
+    "2026 Konstantin Konovalov",
     "2026 SegfaultSommeliers",
 ]
 SPDX-License-Identifier = "MIT"
