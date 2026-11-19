@@ -2,7 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS pastes (
     paste_id TEXT PRIMARY KEY,
-    author_id INTEGER NOT NULL,
+    author_id INTEGER,
     r2_key TEXT NOT NULL UNIQUE,
 
     CONSTRAINT fk_pastes_profiles
