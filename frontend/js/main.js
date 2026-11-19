@@ -4,8 +4,8 @@
 // SPDX-License-Identifier: MIT
 
 import "materialize-css/dist/js/materialize.min.js";
-import hljs from "highlight.js";
 import Alpine from "@alpinejs/csp";
+import hljs from "highlight.js";
 
 Alpine.data("editor", () => ({
     text: "",
@@ -15,10 +15,11 @@ Alpine.data("editor", () => ({
         if (!this.text || this.text.length < 1) return;
         this.saving = true;
         try {
-            const csrfToken = document.cookie
-                .split("; ")
-                .find((c) => c.startsWith("csrf_="))
-                ?.split("=")[1] ?? "";
+            const csrfToken =
+                document.cookie
+                    .split("; ")
+                    .find((c) => c.startsWith("csrf_="))
+                    ?.split("=")[1] ?? "";
 
             const resp = await fetch("/save", {
                 method: "POST",
@@ -26,7 +27,7 @@ Alpine.data("editor", () => ({
                     "Content-Type": "application/json",
                     "X-Csrf-Token": csrfToken,
                 },
-                body: JSON.stringify({text: this.text}),
+                body: JSON.stringify({ text: this.text }),
                 credentials: "same-origin",
             });
 
@@ -35,13 +36,12 @@ Alpine.data("editor", () => ({
                 return;
             }
 
-            const {id} = await resp.json();
+            const { id } = await resp.json();
             if (id) {
-                await navigator.clipboard.writeText(
-                    window.location.origin + "/view/" + id
-                ).catch(() => {
-                });
-                window.location.href = "/view/" + id;
+                await navigator.clipboard
+                    .writeText(`${window.location.origin}/view/${id}`)
+                    .catch(() => {});
+                window.location.href = `/view/${id}`;
             }
         } finally {
             this.saving = false;
@@ -52,7 +52,7 @@ Alpine.data("editor", () => ({
         const el = event.target;
         const s = el.selectionStart;
         const e = el.selectionEnd;
-        this.text = this.text.substring(0, s) + "\t" + this.text.substring(e);
+        this.text = `${this.text.substring(0, s)}\t${this.text.substring(e)}`;
         this.$nextTick(() => {
             el.selectionStart = el.selectionEnd = s + 1;
         });

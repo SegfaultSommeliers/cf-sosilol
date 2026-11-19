@@ -1,8 +1,15 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.6.8/schema.json",
   "files": {
-    "includes": [
-      "frontend/**"
-    ]
+    "includes": ["frontend/**"]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 4
+  },
+  "json": {
+    "formatter": {
+      "indentWidth": 2
+    }
   }
 }

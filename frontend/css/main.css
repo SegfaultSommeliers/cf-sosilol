@@ -23,19 +23,20 @@
 * {
     padding: 0;
     margin: 0;
-    font-family: 'Montserrat', sans-serif;
+    font-family: "Montserrat", sans-serif;
 }
 
-html, body {
+html,
+body {
     overflow: hidden;
     height: 100%;
 }
 
 textarea {
-    font-family: 'Ubuntu Mono', monospace;
+    font-family: "Ubuntu Mono", monospace;
     outline: none;
     border: none;
-    background-color: #121212 !important;
+    background-color: #121212;
     color: white;
     padding: 15px;
     font-size: 18px;
@@ -47,8 +48,8 @@ textarea {
 }
 
 .default-section {
-    font-family: 'Ubuntu Mono', monospace;
-    background-color: #121212 !important;
+    font-family: "Ubuntu Mono", monospace;
+    background-color: #121212;
     color: white;
     white-space: pre;
     height: 100vh;
@@ -69,13 +70,13 @@ textarea {
 }
 
 .code-view * {
-    font-family: 'Ubuntu Mono', monospace;
+    font-family: "Ubuntu Mono", monospace;
     font-size: 18px;
 }
 
 .line-numbers {
     width: 20px;
-    background: #1e1e1e !important;
+    background: #1e1e1e;
     padding-top: 15px;
     font-size: 14px;
     text-align: center;
@@ -130,8 +131,8 @@ textarea {
 }
 
 .profile-collection {
-    outline: none !important;
-    border: none !important;
+    outline: none;
+    border: none;
 }
 
 /* main / editor page */
