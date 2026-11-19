@@ -9,8 +9,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+  queue: max
 
 jobs:
   lint-js:
@@ -21,19 +22,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.4.4"
+          bun-version-file: 'package.json'
 
       - name: Cache Bun dependencies
         uses: actions/cache@v4
         with:
           path: ~/.bun/install/cache
-          key: bun-${{ runner.os }}-${{ runner.arch }}-1.4.4-${{ hashFiles('**/bun.lock', '**/bun.lockb') }}
+          key: bun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package.json') }}-${{ hashFiles('**/bun.lock', '**/bun.lockb') }}
           restore-keys: |
-            bun-${{ runner.os }}-${{ runner.arch }}-1.4.4-
+            bun-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -48,6 +51,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -71,6 +76,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Check REUSE compliance
         uses: fsfe/reuse-action@v6
+
+  deploy:
+    name: Deploy
+    needs: [ lint-js, lint-rust, reuse ]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/stable'
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit

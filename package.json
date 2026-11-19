@@ -1,6 +1,7 @@
 {
   "name": "cf-sosilol",
   "version": "0.1.0",
+  "packageManager": "bun@1.4.4",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "author": "SegfaultSommeliers",
