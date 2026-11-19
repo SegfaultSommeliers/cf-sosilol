@@ -1,5 +1,17 @@
 {
+  "name": "cf-sosilol",
+  "version": "0.1.0",
+  "private": true,
+  "license": "(MIT OR Apache-2.0)",
+  "author": "SegfaultSommeliers",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SegfaultSommeliers/cf-sosilol.git"
+  },
   "scripts": {
+    "lint": "bun run lint:js && bun run lint:rust",
+    "lint:js": "biome check .",
+    "lint:rust": "cargo clippy --target wasm32-unknown-unknown -- -D warnings && cargo fmt --check",
     "build": "bun build ./frontend/js/main.js ./frontend/css/main.css --outdir ./dist/assets --target browser --minify",
     "dev": "bun build ./frontend/js/main.js ./frontend/css/main.css --outdir ./dist/assets --target browser --watch"
   },
@@ -11,5 +23,9 @@
     "highlight.js": "^11.12.0",
     "material-icons": "^1.13.14",
     "materialize-css": "^1.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.8",
+    "wrangler": "4.165.0"
   }
 }
