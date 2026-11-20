@@ -10,9 +10,15 @@ use worker::{
 };
 
 #[derive(Error, Debug)]
-pub enum StorageError {
-    #[error("Database error: {0}")]
-    Database(#[from] worker::Error),
+pub enum Error {
+    #[error("preparing query")]
+    PreparingQuery(#[source] worker::Error),
+
+    #[error("creating profile")]
+    CreatingProfile(#[source] worker::Error),
+
+    #[error("finding profile")]
+    FindingProfile(#[source] worker::Error),
 }
 
 pub struct Storage<'a> {
@@ -25,22 +31,24 @@ pub struct Profile {
     pub github_id: String,
 }
 
-impl Storage<'_> {
-    pub fn new(db: &D1Database) -> Storage {
-        Storage { db }
+impl<'a> Storage<'a> {
+    pub fn new(db: &'a D1Database) -> Self {
+        Self { db }
     }
 
     pub async fn create_profile(
         &self,
         github_id: &str,
-    ) -> Result<(), StorageError> {
+    ) -> Result<(), Error> {
         query!(
             self.db,
             "INSERT INTO profiles (github_id) VALUES (?1)",
             github_id
-        )?
+        )
+        .map_err(Error::PreparingQuery)?
         .run()
-        .await?;
+        .await
+        .map_err(Error::CreatingProfile)?;
 
         Ok(())
     }
@@ -48,16 +56,18 @@ impl Storage<'_> {
     pub async fn find_profile_by_github_id(
         &self,
         github_id: &str,
-    ) -> Result<Option<Profile>, StorageError> {
+    ) -> Result<Option<Profile>, Error> {
         let profile: Option<Profile> = query!(
             self.db,
             "SELECT profile_id, github_id, created_at
              FROM profiles
              WHERE github_id = ?1",
             github_id
-        )?
+        )
+        .map_err(Error::PreparingQuery)?
         .first(None)
-        .await?;
+        .await
+        .map_err(Error::FindingProfile)?;
         Ok(profile)
     }
 }

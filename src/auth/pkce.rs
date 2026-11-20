@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use anyhow::Result;
 use base64::{
     Engine,
     prelude::BASE64_URL_SAFE_NO_PAD,
@@ -11,6 +10,13 @@ use sha2::{
     Digest,
     Sha256,
 };
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum Error {
+    #[error(transparent)]
+    Random(#[from] getrandom::Error),
+}
 
 pub struct Pkce {
     pub verifier: String,
@@ -18,7 +24,7 @@ pub struct Pkce {
 }
 
 impl Pkce {
-    pub fn generate() -> Result<Self> {
+    pub fn generate() -> Result<Self, Error> {
         let verifier = generate_code_verifier()?;
         let challenge = compute_code_challenge(&verifier);
 
@@ -29,10 +35,10 @@ impl Pkce {
     }
 }
 
-fn generate_code_verifier() -> Result<String> {
+fn generate_code_verifier() -> Result<String, Error> {
     let mut bytes = [0u8; 32];
     getrandom::getrandom(&mut bytes)?;
-    Ok(BASE64_URL_SAFE_NO_PAD.encode(&bytes))
+    Ok(BASE64_URL_SAFE_NO_PAD.encode(bytes))
 }
 
 fn compute_code_challenge(code_verifier: &str) -> String {

@@ -18,17 +18,17 @@ pub enum Error {
     #[error(transparent)]
     Http(#[from] reqwest::Error),
 
-    #[error(transparent)]
-    Serialize(#[from] serde_urlencoded::ser::Error),
+    #[error("serializing auth url query")]
+    SerializingQuery(#[source] serde_urlencoded::ser::Error),
 
-    #[error("Invalid credentials")]
+    #[error("invalid credentials")]
     InvalidCredentials,
 
-    #[error("Provider internal error")]
-    Internal,
+    #[error("provider internal error: HTTP {0}")]
+    Internal(StatusCode),
 
-    #[error("Invalid provider response")]
-    InvalidResponse,
+    #[error("invalid provider response")]
+    InvalidResponse(#[source] reqwest::Error),
 }
 
 pub struct Provider {
@@ -97,7 +97,8 @@ impl Provider {
             code_challenge,
             code_challenge_method: "S256",
             scope: &scope,
-        })?;
+        })
+        .map_err(Error::SerializingQuery)?;
 
         url.set_query(Some(&query));
         Ok(url)
@@ -122,20 +123,21 @@ impl Provider {
             .send()
             .await?;
 
-        let response = response
-            .error_for_status()
-            .map_err(|err| match err.status() {
-                Some(status)
-                    if status == StatusCode::UNAUTHORIZED || status == StatusCode::FORBIDDEN =>
-                {
-                    Error::InvalidCredentials
-                }
-                Some(status) if status.is_server_error() => Error::Internal,
-                _ => Error::Http(err),
-            })?;
+        match response.status() {
+            StatusCode::OK => {}
+
+            StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN => {
+                return Err(Error::InvalidCredentials);
+            }
+
+            status => {
+                return Err(Error::Internal(status));
+            }
+        }
+
         let response: TokenResponse = response.json().await.map_err(|err| {
             if err.is_decode() {
-                Error::InvalidResponse
+                Error::InvalidResponse(err)
             } else {
                 Error::Http(err)
             }
