@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 mod github;
+pub mod oauth;
 mod pkce;
-mod provider;
 pub mod routes;
 mod session;
 mod storage;
