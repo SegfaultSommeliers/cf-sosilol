@@ -7,6 +7,9 @@ path = [
     "src/auth/github.rs",
     "src/auth/pkce.rs",
     "src/auth/provider.rs",
+    "src/auth/routes.rs",
+    "src/auth/session.rs",
+    "src/auth/storage.rs",
     "src/layouts.rs",
     "src/lib.rs",
     "src/models.rs",
@@ -15,6 +18,7 @@ path = [
     "src/pages.rs",
     "src/paste.rs",
     "src/paste/**/*.rs",
+    "src/state.rs",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 SegfaultSommeliers"

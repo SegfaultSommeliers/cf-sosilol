@@ -31,7 +31,7 @@ impl Pkce {
 
 fn generate_code_verifier() -> Result<String> {
     let mut bytes = [0u8; 32];
-    getrandom::fill(&mut bytes)?;
+    getrandom::getrandom(&mut bytes)?;
     Ok(BASE64_URL_SAFE_NO_PAD.encode(&bytes))
 }
 
