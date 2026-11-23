@@ -2,13 +2,7 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use crate::{
-    auth::{
-        generate_nonce,
-        pkce,
-    },
-    paste::storage,
-};
+use crate::paste::storage;
 use rand::{
     RngExt,
     distr::Alphanumeric,
@@ -19,12 +13,6 @@ use thiserror::Error;
 pub enum Error {
     #[error("text is required or too large")]
     InvalidText,
-
-    #[error("generating paste id")]
-    GeneratingId(#[source] getrandom::Error),
-
-    #[error("generating storage key")]
-    GeneratingKey(#[source] pkce::Error),
 
     #[error("accessing paste storage")]
     Storage(#[source] storage::Error),
@@ -71,21 +59,22 @@ impl<'a> Service<'a> {
         }
         for _ in 0..5 {
             let id = generate_id();
-            let key = format!("pastes/{}", generate_nonce().map_err(Error::GeneratingKey)?);
-            self.storage
-                .put_object(&key, text)
-                .await
-                .map_err(Error::Storage)?;
             if self
                 .storage
-                .insert(&id, &key, author)
+                .insert(&id, author)
                 .await
                 .map_err(Error::Storage)?
             {
+                if let Err(error) = self.storage.put_object(&id, text).await {
+                    if let Err(cleanup_error) = self.storage.delete_object(&id).await {
+                        tracing::error!(?cleanup_error, %id, "failed to clean up R2 object");
+                    }
+                    if let Err(cleanup_error) = self.storage.delete_paste(&id).await {
+                        tracing::error!(?cleanup_error, %id, "failed to clean up reserved paste ID");
+                    }
+                    return Err(Error::Storage(error));
+                }
                 return Ok(id);
-            }
-            if let Err(error) = self.storage.delete_object(&key).await {
-                tracing::error!(?error, key, "failed to clean up R2 object");
             }
         }
         Err(Error::IdCollision)
@@ -95,14 +84,6 @@ impl<'a> Service<'a> {
         &self,
         id: &str,
     ) -> Result<Option<String>, Error> {
-        let Some(key) = self.storage.find_key(id).await.map_err(Error::Storage)? else {
-            return Ok(None);
-        };
-        Ok(Some(
-            self.storage
-                .get_object(&key)
-                .await
-                .map_err(Error::Storage)?,
-        ))
+        self.storage.get_object(id).await.map_err(Error::Storage)
     }
 }

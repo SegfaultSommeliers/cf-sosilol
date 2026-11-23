@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use serde::Deserialize;
 use thiserror::Error;
 use worker::{
     Bucket,
@@ -15,16 +14,8 @@ pub enum Error {
     #[error("accessing paste storage")]
     Worker(#[from] worker::Error),
 
-    #[error("R2 object missing")]
-    MissingObject,
-
     #[error("R2 object has no body")]
     MissingBody,
-}
-
-#[derive(Deserialize)]
-struct PasteKey {
-    r2_key: String,
 }
 
 pub struct Storage<'a> {
@@ -63,36 +54,31 @@ impl<'a> Storage<'a> {
     pub async fn insert(
         &self,
         id: &str,
-        key: &str,
         author: Option<i64>,
     ) -> Result<bool, Error> {
-        let result = query!(self.db, "INSERT OR IGNORE INTO pastes (paste_id, r2_key, author_id) VALUES (?1, ?2, (SELECT profile_id FROM profiles WHERE github_id = ?3))", id, key, author)?
+        let result = query!(self.db, "INSERT OR IGNORE INTO pastes (paste_id, author_id) VALUES (?1, (SELECT profile_id FROM profiles WHERE github_id = ?2))", id, author)?
         .run().await?;
         Ok(result.meta()?.and_then(|meta| meta.changes).unwrap_or(0) > 0)
     }
 
-    pub async fn find_key(
+    pub async fn delete_paste(
         &self,
         id: &str,
-    ) -> Result<Option<String>, Error> {
-        let row: Option<PasteKey> =
-            query!(self.db, "SELECT r2_key FROM pastes WHERE paste_id = ?1", id)?
-                .first(None)
-                .await?;
-        Ok(row.map(|paste| paste.r2_key))
+    ) -> Result<(), Error> {
+        query!(self.db, "DELETE FROM pastes WHERE paste_id = ?1", id)?
+            .run()
+            .await?;
+        Ok(())
     }
 
     pub async fn get_object(
         &self,
         key: &str,
-    ) -> Result<String, Error> {
-        let object = self
-            .bucket
-            .get(key)
-            .execute()
-            .await?
-            .ok_or(Error::MissingObject)?;
+    ) -> Result<Option<String>, Error> {
+        let Some(object) = self.bucket.get(key).execute().await? else {
+            return Ok(None);
+        };
         let body = object.body().ok_or(Error::MissingBody)?;
-        Ok(body.text().await?)
+        Ok(Some(body.text().await?))
     }
 }
