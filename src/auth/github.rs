@@ -1,4 +1,12 @@
 use crate::auth::oauth::Provider;
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+pub struct GithubUser {
+    pub id: i64,
+    pub login: String,
+    pub avatar_url: String,
+}
 
 impl Provider {
     pub fn github(
@@ -11,5 +19,20 @@ impl Provider {
             client_id,
             client_secret,
         )
+    }
+
+    pub async fn get_github_user(
+        &self,
+        token: &str,
+    ) -> Result<GithubUser, reqwest::Error> {
+        reqwest::Client::new()
+            .get("https://api.github.com/user")
+            .header("User-Agent", "cf-sosilol")
+            .bearer_auth(token)
+            .send()
+            .await?
+            .error_for_status()?
+            .json()
+            .await
     }
 }

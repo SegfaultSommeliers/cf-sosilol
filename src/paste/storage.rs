@@ -1,3 +1,96 @@
 // SPDX-FileCopyrightText: 2026 SegfaultSommeliers
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
+
+use serde::Deserialize;
+use thiserror::Error;
+use worker::{
+    Bucket,
+    D1Database,
+    query,
+};
+
+#[derive(Error, Debug)]
+pub enum Error {
+    #[error("accessing paste storage")]
+    Worker(#[from] worker::Error),
+    #[error("R2 object missing")]
+    MissingObject,
+    #[error("R2 object has no body")]
+    MissingBody,
+}
+
+#[derive(Deserialize)]
+struct PasteKey {
+    r2_key: String,
+}
+
+pub struct Storage<'a> {
+    db: &'a D1Database,
+    bucket: &'a Bucket,
+}
+
+impl<'a> Storage<'a> {
+    pub fn new(
+        db: &'a D1Database,
+        bucket: &'a Bucket,
+    ) -> Self {
+        Self { db, bucket }
+    }
+
+    pub async fn put_object(
+        &self,
+        key: &str,
+        text: &str,
+    ) -> Result<(), Error> {
+        self.bucket
+            .put(key, text.as_bytes().to_vec())
+            .execute()
+            .await?;
+        Ok(())
+    }
+
+    pub async fn delete_object(
+        &self,
+        key: &str,
+    ) -> Result<(), Error> {
+        self.bucket.delete(key).await?;
+        Ok(())
+    }
+
+    pub async fn insert(
+        &self,
+        id: &str,
+        key: &str,
+        author: Option<i64>,
+    ) -> Result<bool, Error> {
+        let result = query!(self.db, "INSERT OR IGNORE INTO pastes (paste_id, r2_key, author_id) VALUES (?1, ?2, (SELECT profile_id FROM profiles WHERE github_id = ?3))", id, key, author)?
+        .run().await?;
+        Ok(result.meta()?.and_then(|meta| meta.changes).unwrap_or(0) > 0)
+    }
+
+    pub async fn find_key(
+        &self,
+        id: &str,
+    ) -> Result<Option<String>, Error> {
+        let row: Option<PasteKey> =
+            query!(self.db, "SELECT r2_key FROM pastes WHERE paste_id = ?1", id)?
+                .first(None)
+                .await?;
+        Ok(row.map(|paste| paste.r2_key))
+    }
+
+    pub async fn get_object(
+        &self,
+        key: &str,
+    ) -> Result<String, Error> {
+        let object = self
+            .bucket
+            .get(key)
+            .execute()
+            .await?
+            .ok_or(Error::MissingObject)?;
+        let body = object.body().ok_or(Error::MissingBody)?;
+        Ok(body.text().await?)
+    }
+}

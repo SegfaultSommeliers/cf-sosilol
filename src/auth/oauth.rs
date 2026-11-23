@@ -31,6 +31,7 @@ pub enum Error {
     InvalidResponse(#[source] reqwest::Error),
 }
 
+#[derive(Clone)]
 pub struct Provider {
     authorize_url: Url,
     access_token_url: Url,
@@ -60,7 +61,9 @@ struct TokenRequest<'a> {
 #[derive(Deserialize)]
 pub struct TokenResponse {
     pub access_token: String,
+    #[serde(rename = "token_type")]
     pub _token_type: String,
+    #[serde(rename = "scope")]
     pub _scope: String,
 }
 

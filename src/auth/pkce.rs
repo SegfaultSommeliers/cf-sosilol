@@ -4,6 +4,7 @@
 
 use base64::{
     Engine,
+    engine::general_purpose::URL_SAFE_NO_PAD,
     prelude::BASE64_URL_SAFE_NO_PAD,
 };
 use sha2::{
@@ -20,6 +21,7 @@ pub enum Error {
 
 pub struct Pkce {
     pub verifier: String,
+    #[allow(dead_code)]
     pub challenge: String,
 }
 
@@ -41,6 +43,13 @@ fn generate_code_verifier() -> Result<String, Error> {
     Ok(BASE64_URL_SAFE_NO_PAD.encode(bytes))
 }
 
-fn compute_code_challenge(code_verifier: &str) -> String {
+pub fn compute_code_challenge(code_verifier: &str) -> String {
     BASE64_URL_SAFE_NO_PAD.encode(Sha256::digest(code_verifier))
+}
+
+pub fn generate_nonce() -> Result<String, Error> {
+    let mut bytes = [0u8; 32];
+    getrandom::getrandom(&mut bytes)?;
+
+    Ok(URL_SAFE_NO_PAD.encode(bytes))
 }
