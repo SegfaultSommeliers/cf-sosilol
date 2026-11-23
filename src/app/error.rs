@@ -58,6 +58,10 @@ impl AppError {
         Self::new(StatusCode::CONFLICT, message)
     }
 
+    pub fn too_many_requests(message: impl Into<String>) -> Self {
+        Self::new(StatusCode::TOO_MANY_REQUESTS, message)
+    }
+
     pub fn internal(error: impl Debug) -> Self {
         tracing::error!(
             target: "app_error",

@@ -5,6 +5,7 @@
 use crate::{
     app::{
         AppState,
+        rate_limit,
         request_logger,
     },
     auth,
@@ -27,6 +28,7 @@ use base64::{
     Engine,
     prelude::BASE64_STANDARD,
 };
+use std::sync::Arc;
 use tower_http::request_id::{
     MakeRequestUuid,
     PropagateRequestIdLayer,
@@ -71,6 +73,18 @@ impl App {
             .ok()
             .filter(|limit| *limit > 0)
             .expect("`MAX_PASTE_SIZE_BYTES` must be a positive integer");
+        let global_rate_limiter = Arc::new(
+            env.rate_limiter("GLOBAL_RATE_LIMITER")
+                .expect("`GLOBAL_RATE_LIMITER` is invalid"),
+        );
+        let save_rate_limiter = Arc::new(
+            env.rate_limiter("SAVE_RATE_LIMITER")
+                .expect("`SAVE_RATE_LIMITER` is invalid"),
+        );
+        let auth_request_rate_limiter = Arc::new(
+            env.rate_limiter("AUTH_REQUEST_RATE_LIMITER")
+                .expect("`AUTH_REQUEST_RATE_LIMITER` is invalid"),
+        );
 
         Self {
             state: AppState::new(
@@ -81,6 +95,9 @@ impl App {
                 auth_provider,
                 redirect_url,
                 max_paste_size_bytes,
+                global_rate_limiter,
+                save_rate_limiter,
+                auth_request_rate_limiter,
             ),
         }
     }
@@ -105,6 +122,10 @@ impl App {
             .with_state(self.state.clone())
             .layer(PropagateRequestIdLayer::x_request_id())
             .layer(middleware::from_fn(request_logger))
+            .layer(middleware::from_fn_with_state(
+                self.state.clone(),
+                rate_limit,
+            ))
             .layer(SetRequestIdLayer::x_request_id(MakeRequestUuid))
     }
 

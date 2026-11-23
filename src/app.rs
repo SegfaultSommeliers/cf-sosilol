@@ -6,10 +6,12 @@
 mod app;
 #[allow(dead_code)]
 mod error;
+mod rate_limit;
 mod request_logger;
 mod state;
 
 pub use app::*;
 pub use error::*;
+pub use rate_limit::*;
 pub use request_logger::*;
 pub use state::*;

@@ -13,6 +13,7 @@ use worker::{
     Bucket,
     D1Database,
     Env,
+    RateLimiter,
 };
 
 #[derive(Clone)]
@@ -24,6 +25,9 @@ pub struct AppState {
     pub auth_provider: auth::Provider,
     pub redirect_url: String,
     pub max_paste_size_bytes: usize,
+    pub global_rate_limiter: Arc<RateLimiter>,
+    pub save_rate_limiter: Arc<RateLimiter>,
+    pub auth_request_rate_limiter: Arc<RateLimiter>,
 }
 
 impl FromRef<AppState> for Key {
@@ -33,6 +37,7 @@ impl FromRef<AppState> for Key {
 }
 
 impl AppState {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         env: Env,
         db: D1Database,
@@ -41,6 +46,9 @@ impl AppState {
         auth_provider: auth::Provider,
         redirect_url: String,
         max_paste_size_bytes: usize,
+        global_rate_limiter: Arc<RateLimiter>,
+        save_rate_limiter: Arc<RateLimiter>,
+        auth_request_rate_limiter: Arc<RateLimiter>,
     ) -> Self {
         Self {
             env,
@@ -50,6 +58,9 @@ impl AppState {
             auth_provider,
             redirect_url,
             max_paste_size_bytes,
+            global_rate_limiter,
+            save_rate_limiter,
+            auth_request_rate_limiter,
         }
     }
 

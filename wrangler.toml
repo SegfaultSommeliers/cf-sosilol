@@ -18,6 +18,30 @@ command = "cargo install -q \"worker-build@^0.9\" && worker-build --release --pa
 [vars]
 MAX_PASTE_SIZE_BYTES = "65536"
 
+[[ratelimits]]
+name = "GLOBAL_RATE_LIMITER"
+namespace_id = "1"
+
+[ratelimits.simple]
+limit = 60
+period = 60
+
+[[ratelimits]]
+name = "SAVE_RATE_LIMITER"
+namespace_id = "2"
+
+[ratelimits.simple]
+limit = 10
+period = 60
+
+[[ratelimits]]
+name = "AUTH_REQUEST_RATE_LIMITER"
+namespace_id = "3"
+
+[ratelimits.simple]
+limit = 5
+period = 60
+
 [[d1_databases]]
 binding = "DB"
 database_name = "pastes"
