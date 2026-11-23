@@ -67,7 +67,7 @@ jobs:
         run: cargo clippy --target wasm32-unknown-unknown -- -D warnings
 
       - name: Check formatting
-        run: cargo fmt --check
+        run: cargo +nightly fmt --check
 
   reuse:
     name: REUSE compliance
