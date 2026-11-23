@@ -105,6 +105,7 @@ impl App {
     fn router(&self) -> Router {
         Router::new()
             .route("/", get(pages::main()))
+            .route("/authors", get(pages::authors()))
             .route("/profile", get(auth::profile))
             .route("/auth/request", get(auth::request))
             .route("/auth/redirect", get(auth::callback))
