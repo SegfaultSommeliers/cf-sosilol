@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: 2026 SegfaultSommeliers
+//
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 use crate::{
@@ -34,21 +35,31 @@ use axum_extra::extract::{
         SameSite,
     },
 };
+use reqwest::Url;
 use serde::Deserialize;
 use thiserror::Error;
+use time::{
+    Duration,
+    OffsetDateTime,
+};
 
 #[derive(Debug, Error)]
 enum Error {
     #[error("missing state")]
     MissingState,
+
     #[error("state mismatch or expired")]
     InvalidState,
+
     #[error("generating authorization URL")]
     AuthorizationUrl(#[source] oauth::Error),
+
     #[error("serializing session")]
     SerializingSession(#[source] serde_json::Error),
+
     #[error("invalid session user ID")]
     InvalidUserId(#[source] std::num::ParseIntError),
+
     #[error("authentication service")]
     Service(#[source] service::Error),
 }
@@ -87,21 +98,19 @@ fn cookie(
     state: &AppState,
     seconds: i64,
 ) -> Cookie<'static> {
-    let mut cookie = Cookie::parse(format!("{name}=; Max-Age={seconds}"))
-        .expect("valid cookie")
-        .into_owned();
-    cookie.set_value(value);
-    Cookie::build(cookie)
+    Cookie::build(Cookie::new(name, value))
         .http_only(true)
         .secure(state.redirect_url.starts_with("https://"))
         .same_site(SameSite::Lax)
+        .max_age(Duration::seconds(seconds))
         .path("/")
         .build()
 }
 
 pub fn session(jar: &PrivateCookieJar) -> Option<Session> {
     let session: Session = serde_json::from_str(jar.get("session")?.value()).ok()?;
-    (session.exp > worker::Date::now().as_millis() / 1000).then_some(session)
+    let now = OffsetDateTime::now_utc().unix_timestamp() as u64;
+    (session.exp > now).then_some(session)
 }
 
 pub async fn request(
@@ -145,10 +154,8 @@ pub async fn callback(
         .get("auth_session")
         .and_then(|v| serde_json::from_str(v.value()).ok())
         .ok_or(Error::MissingState)?;
-    if oauth.exp <= worker::Date::now().as_millis() / 1000
-        || query.state.is_empty()
-        || query.state != oauth.state
-    {
+    let now = OffsetDateTime::now_utc().unix_timestamp() as u64;
+    if oauth.exp <= now || query.state.is_empty() || query.state != oauth.state {
         return Err(Error::InvalidState.into());
     }
     let (token, user) = state
@@ -156,7 +163,7 @@ pub async fn callback(
         .authorize(&state.auth_provider, &oauth.code_verifier, &query.code)
         .await
         .map_err(Error::Service)?;
-    let avatar_url = reqwest::Url::parse(&user.avatar_url)
+    let avatar_url = Url::parse(&user.avatar_url)
         .ok()
         .filter(|url| {
             url.scheme() == "https"
@@ -172,7 +179,7 @@ pub async fn callback(
         github_access_token: token,
         login: user.login,
         avatar_url,
-        exp: worker::Date::now().as_millis() / 1000 + 86400 * 30,
+        exp: now + 86400 * 30,
     };
     let value = serde_json::to_string(&session).map_err(Error::SerializingSession)?;
     let redirect = if safe_redirect(&oauth.redirect) {

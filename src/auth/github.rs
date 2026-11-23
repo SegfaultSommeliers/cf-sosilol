@@ -1,4 +1,9 @@
-use crate::auth::oauth::Provider;
+// SPDX-FileCopyrightText: 2026 SegfaultSommeliers
+//
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
+use crate::auth::Provider;
+use reqwest::Client;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -25,7 +30,7 @@ impl Provider {
         &self,
         token: &str,
     ) -> Result<GithubUser, reqwest::Error> {
-        reqwest::Client::new()
+        Client::new()
             .get("https://api.github.com/user")
             .header("User-Agent", "cf-sosilol")
             .bearer_auth(token)

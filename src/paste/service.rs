@@ -4,25 +4,31 @@
 
 use crate::{
     auth::{
-        self,
+        generate_nonce,
         pkce,
     },
     paste::storage,
 };
+use rand::{
+    RngExt,
+    distr::Alphanumeric,
+};
 use thiserror::Error;
-
-const ALPHABET: &[u8] = b"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("text is required or too large")]
     InvalidText,
+
     #[error("generating paste id")]
     GeneratingId(#[source] getrandom::Error),
+
     #[error("generating storage key")]
     GeneratingKey(#[source] pkce::Error),
+
     #[error("accessing paste storage")]
     Storage(#[source] storage::Error),
+
     #[error("failed to generate unique paste id")]
     IdCollision,
 }
@@ -35,21 +41,12 @@ pub fn valid_id(id: &str) -> bool {
     id.len() == 14 && id.bytes().all(|b| b.is_ascii_alphanumeric())
 }
 
-fn generate_id() -> Result<String, Error> {
-    let mut id = String::with_capacity(14);
-    while id.len() < 14 {
-        let mut bytes = [0; 32];
-        getrandom::getrandom(&mut bytes).map_err(Error::GeneratingId)?;
-        for byte in bytes {
-            if byte < 248 {
-                id.push(ALPHABET[(byte % 62) as usize] as char);
-            }
-            if id.len() == 14 {
-                break;
-            }
-        }
-    }
-    Ok(id)
+fn generate_id() -> String {
+    rand::rng()
+        .sample_iter(&Alphanumeric)
+        .take(14)
+        .map(char::from)
+        .collect()
 }
 
 impl<'a> Service<'a> {
@@ -66,11 +63,8 @@ impl<'a> Service<'a> {
             return Err(Error::InvalidText);
         }
         for _ in 0..5 {
-            let id = generate_id()?;
-            let key = format!(
-                "pastes/{}",
-                auth::generate_nonce().map_err(Error::GeneratingKey)?
-            );
+            let id = generate_id();
+            let key = format!("pastes/{}", generate_nonce().map_err(Error::GeneratingKey)?);
             self.storage
                 .put_object(&key, text)
                 .await

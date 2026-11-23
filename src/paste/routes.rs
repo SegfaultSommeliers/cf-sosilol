@@ -7,7 +7,7 @@ use crate::{
         AppError,
         AppState,
     },
-    auth,
+    auth::session,
     pages,
     paste::service,
 };
@@ -32,8 +32,10 @@ use thiserror::Error;
 enum Error {
     #[error("invalid paste id")]
     InvalidId,
+
     #[error("paste not found")]
     NotFound,
+
     #[error("paste service")]
     Service(#[source] service::Error),
 }
@@ -62,7 +64,7 @@ pub async fn save(
     jar: PrivateCookieJar,
     Json(request): Json<SaveRequest>,
 ) -> Result<Response, AppError> {
-    let author: Option<i64> = auth::session(&jar).and_then(|session| session.user_id.parse().ok());
+    let author: Option<i64> = session(&jar).and_then(|session| session.user_id.parse().ok());
     let id = state
         .paste_service(&state.paste_storage())
         .save(&request.text, author)

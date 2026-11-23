@@ -4,7 +4,6 @@
 
 use base64::{
     Engine,
-    engine::general_purpose::URL_SAFE_NO_PAD,
     prelude::BASE64_URL_SAFE_NO_PAD,
 };
 use sha2::{
@@ -39,7 +38,7 @@ impl Pkce {
 
 fn generate_code_verifier() -> Result<String, Error> {
     let mut bytes = [0u8; 32];
-    getrandom::getrandom(&mut bytes)?;
+    getrandom::fill(&mut bytes)?;
     Ok(BASE64_URL_SAFE_NO_PAD.encode(bytes))
 }
 
@@ -49,7 +48,7 @@ pub fn compute_code_challenge(code_verifier: &str) -> String {
 
 pub fn generate_nonce() -> Result<String, Error> {
     let mut bytes = [0u8; 32];
-    getrandom::getrandom(&mut bytes)?;
+    getrandom::fill(&mut bytes)?;
 
-    Ok(URL_SAFE_NO_PAD.encode(bytes))
+    Ok(BASE64_URL_SAFE_NO_PAD.encode(bytes))
 }

@@ -14,8 +14,10 @@ use worker::{
 pub enum Error {
     #[error("accessing paste storage")]
     Worker(#[from] worker::Error),
+
     #[error("R2 object missing")]
     MissingObject,
+
     #[error("R2 object has no body")]
     MissingBody,
 }
