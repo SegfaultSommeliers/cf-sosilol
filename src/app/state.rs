@@ -58,7 +58,7 @@ impl AppState {
         &self,
         storage: &'a auth::Storage<'a>,
     ) -> auth::Service<'a> {
-        auth::Service::new(&storage)
+        auth::Service::new(storage)
     }
 
     pub fn paste_storage(&self) -> paste::Storage<'_> {
