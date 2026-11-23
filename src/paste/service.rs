@@ -35,6 +35,7 @@ pub enum Error {
 
 pub struct Service<'a> {
     storage: &'a storage::Storage<'a>,
+    max_paste_size_bytes: usize,
 }
 
 pub fn valid_id(id: &str) -> bool {
@@ -50,8 +51,14 @@ fn generate_id() -> String {
 }
 
 impl<'a> Service<'a> {
-    pub fn new(storage: &'a storage::Storage<'a>) -> Self {
-        Self { storage }
+    pub fn new(
+        storage: &'a storage::Storage<'a>,
+        max_paste_size_bytes: usize,
+    ) -> Self {
+        Self {
+            storage,
+            max_paste_size_bytes,
+        }
     }
 
     pub async fn save(
@@ -59,7 +66,7 @@ impl<'a> Service<'a> {
         text: &str,
         author: Option<i64>,
     ) -> Result<String, Error> {
-        if text.trim().is_empty() || text.chars().count() > 1_048_576 {
+        if text.trim().is_empty() || text.len() > self.max_paste_size_bytes {
             return Err(Error::InvalidText);
         }
         for _ in 0..5 {

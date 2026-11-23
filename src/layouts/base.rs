@@ -42,7 +42,7 @@ pub fn base_layout(children: Markup) -> Markup {
                                 a href="/v1/swagger-ui/index.html" { "API" }
                             }
                             li {
-                                a href="https://vk.com/fiwka" { "Автор" }
+                                a href="https://github.com/fiwka" { "Автор" }
                             }
                             li {
                                 a href="/profile" { "Профиль" }
@@ -56,7 +56,7 @@ pub fn base_layout(children: Markup) -> Markup {
                         a href="/v1/swagger-ui/index.html" { "API" }
                     }
                     li {
-                        a href="https://vk.com/fiwka" { "Автор" }
+                        a href="https://github.com/fiwka" { "Автор" }
                     }
                     li {
                         a href="/profile" { "Профиль" }

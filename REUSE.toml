@@ -51,6 +51,7 @@ path = [
     ".github/workflows/ci.yml",
     ".github/workflows/deploy.yml",
     ".gitignore",
+    "README.md",
     "biome.json",
     "Cargo.toml",
     "package.json",

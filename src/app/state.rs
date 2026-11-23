@@ -23,6 +23,7 @@ pub struct AppState {
     pub cookie_key: Key,
     pub auth_provider: auth::Provider,
     pub redirect_url: String,
+    pub max_paste_size_bytes: usize,
 }
 
 impl FromRef<AppState> for Key {
@@ -39,6 +40,7 @@ impl AppState {
         cookie_key: Key,
         auth_provider: auth::Provider,
         redirect_url: String,
+        max_paste_size_bytes: usize,
     ) -> Self {
         Self {
             env,
@@ -47,6 +49,7 @@ impl AppState {
             cookie_key,
             auth_provider,
             redirect_url,
+            max_paste_size_bytes,
         }
     }
 
@@ -69,6 +72,6 @@ impl AppState {
         &self,
         storage: &'a paste::Storage<'a>,
     ) -> paste::Service<'a> {
-        paste::Service::new(storage)
+        paste::Service::new(storage, self.max_paste_size_bytes)
     }
 }

@@ -63,9 +63,25 @@ impl App {
             .to_string();
         let db = env.d1("DB").expect("`DB` is invalid");
         let bucket = env.bucket("BUCKET").expect("`BUCKET` is invalid");
+        let max_paste_size_bytes = env
+            .var("MAX_PASTE_SIZE_BYTES")
+            .expect("`MAX_PASTE_SIZE_BYTES` is invalid")
+            .to_string()
+            .parse::<usize>()
+            .ok()
+            .filter(|limit| *limit > 0)
+            .expect("`MAX_PASTE_SIZE_BYTES` must be a positive integer");
 
         Self {
-            state: AppState::new(env, db, bucket, cookie_key, auth_provider, redirect_url),
+            state: AppState::new(
+                env,
+                db,
+                bucket,
+                cookie_key,
+                auth_provider,
+                redirect_url,
+                max_paste_size_bytes,
+            ),
         }
     }
 
@@ -78,7 +94,11 @@ impl App {
             .route("/auth/logout", post(auth::logout))
             .route(
                 "/save",
-                post(paste::save).layer(DefaultBodyLimit::max(6 * 1_048_576 + 1024)),
+                post(paste::save).layer(DefaultBodyLimit::max(
+                    6usize
+                        .saturating_mul(self.state.max_paste_size_bytes)
+                        .saturating_add(1024),
+                )),
             )
             .route("/view/{id}", get(paste::view))
             .route("/raw/{id}", get(paste::raw))
