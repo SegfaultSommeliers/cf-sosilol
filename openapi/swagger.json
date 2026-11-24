@@ -1,0 +1,163 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "A simple paste service",
+        "title": "sosi.lol",
+        "contact": {},
+        "version": "v1"
+    },
+    "host": "sosi.lol",
+    "paths": {
+        "/auth/logout": {
+            "post": {
+                "description": "Destroys the current session and redirects to the home page.",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Log out",
+                "responses": {
+                    "302": {
+                        "description": "Redirect to /",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/raw/{id}": {
+            "get": {
+                "description": "Returns the paste content as plain text",
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "pastes"
+                ],
+                "summary": "Get raw paste",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Paste ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Raw paste content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid paste id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/save": {
+            "post": {
+                "description": "Saves a paste. If the user is authenticated via GitHub, the paste is linked to their account.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pastes"
+                ],
+                "summary": "Save a new paste",
+                "parameters": [
+                    {
+                        "description": "Paste text",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "JSON with the paste id",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body or empty text",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/view/{id}": {
+            "get": {
+                "description": "Returns an HTML page with the paste content",
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "pastes"
+                ],
+                "summary": "View a paste",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Paste ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "HTML page with the paste",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "302": {
+                        "description": "Redirect to / if id is missing or not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

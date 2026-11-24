@@ -37,6 +37,9 @@ jobs:
       - name: Build frontend
         run: bun run build
 
+      - name: Build API documentation
+        run: bun run build:docs
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -44,9 +47,6 @@ jobs:
 
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
-
-      - name: Install worker-build
-        run: cargo install worker-build --version '^0.9' --locked
 
       - name: Deploy to Cloudflare
         run: bunx --no-install wrangler deploy

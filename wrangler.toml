@@ -10,7 +10,7 @@ enabled = true
 
 [assets]
 directory = "./dist"
-run_worker_first = ["/*", "!/assets/*"]
+run_worker_first = ["/*", "!/assets/*", "!/v1/swagger-ui/*"]
 
 [build]
 command = "cargo install -q \"worker-build@^0.9\" && worker-build --release --panic-unwind"
