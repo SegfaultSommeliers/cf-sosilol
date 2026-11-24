@@ -23,6 +23,10 @@ pub struct Storage<'a> {
     bucket: &'a Bucket,
 }
 
+fn object_key(key: &str) -> String {
+    format!("pastes/{key}")
+}
+
 impl<'a> Storage<'a> {
     pub fn new(
         db: &'a D1Database,
@@ -37,7 +41,7 @@ impl<'a> Storage<'a> {
         text: &str,
     ) -> Result<(), Error> {
         self.bucket
-            .put(key, text.as_bytes().to_vec())
+            .put(object_key(key), text.as_bytes().to_vec())
             .execute()
             .await?;
         Ok(())
@@ -47,7 +51,7 @@ impl<'a> Storage<'a> {
         &self,
         key: &str,
     ) -> Result<(), Error> {
-        self.bucket.delete(key).await?;
+        self.bucket.delete(&object_key(key)).await?;
         Ok(())
     }
 
@@ -75,7 +79,7 @@ impl<'a> Storage<'a> {
         &self,
         key: &str,
     ) -> Result<Option<String>, Error> {
-        let Some(object) = self.bucket.get(key).execute().await? else {
+        let Some(object) = self.bucket.get(object_key(key)).execute().await? else {
             return Ok(None);
         };
         let body = object.body().ok_or(Error::MissingBody)?;

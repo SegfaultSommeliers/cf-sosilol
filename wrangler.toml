@@ -44,10 +44,9 @@ period = 60
 
 [[d1_databases]]
 binding = "DB"
-database_name = "pastes"
-database_id = "31422626-b9f6-45aa-b6a3-727698834786"
-migrations_dir = "migrations"
+database_name = "pastebin"
+database_id = "c70ac543-57f7-4569-97b4-2c095cd47de9"
 
 [[r2_buckets]]
-bucket_name = "pastes"
+bucket_name = "pastebin"
 binding = "BUCKET"
