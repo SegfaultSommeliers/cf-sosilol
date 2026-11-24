@@ -55,6 +55,7 @@ path = [
     ".gitignore",
     "README.md",
     "biome.json",
+    "openapi/swagger.json",
     "Cargo.toml",
     "package.json",
     "rustfmt.toml",
