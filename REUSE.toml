@@ -33,6 +33,7 @@ SPDX-License-Identifier = "MIT OR Apache-2.0"
 [[annotations]]
 path = [
     "frontend/css/main.css",
+    "frontend/public/favicon.ico",
     "frontend/js/main.js",
     "src/layouts/bare.rs",
     "src/layouts/base.rs",
@@ -59,6 +60,7 @@ path = [
     "Cargo.toml",
     "package.json",
     "rustfmt.toml",
+    "vite.config.js",
     "wrangler.toml",
 ]
 precedence = "aggregate"
