@@ -13,9 +13,10 @@
     "lint": "bun run lint:js && bun run lint:rust",
     "lint:js": "biome check .",
     "lint:rust": "cargo clippy --target wasm32-unknown-unknown -- -D warnings && cargo fmt --check",
-    "build": "vite build",
+    "copy:favicon": "bun -e \"import('node:fs/promises').then(({ mkdir }) => mkdir('dist', { recursive: true })).then(() => Bun.write('dist/favicon.ico', Bun.file('frontend/public/favicon.ico')))\"",
+    "build": "bun build ./frontend/js/main.js ./frontend/css/main.css --outdir ./dist/assets --target browser --minify && bun run copy:favicon",
     "build:docs": "redocly build-docs openapi/swagger.json --output dist/v1/swagger-ui/index.html --inlineBundle",
-    "dev": "vite build --watch"
+    "dev": "bun run copy:favicon && bun build ./frontend/js/main.js ./frontend/css/main.css --outdir ./dist/assets --target browser --watch"
   },
   "dependencies": {
     "@alpinejs/csp": "^3.17.5",
@@ -29,7 +30,6 @@
   "devDependencies": {
     "@biomejs/biome": "2.6.8",
     "@redocly/cli": "2.83.0",
-    "vite": "8.3.8",
     "wrangler": "4.165.0"
   }
 }

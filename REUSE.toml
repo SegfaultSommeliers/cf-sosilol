@@ -60,7 +60,6 @@ path = [
     "Cargo.toml",
     "package.json",
     "rustfmt.toml",
-    "vite.config.js",
     "wrangler.toml",
 ]
 precedence = "aggregate"
