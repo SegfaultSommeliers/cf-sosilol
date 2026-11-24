@@ -19,7 +19,12 @@ pub fn bare_layout(children: Markup) -> Markup {
                 meta name="viewport" content="width=device-width, initial-scale=1.0";
 
                 link rel="shortcut icon" href="/favicon.ico" type="image/x-icon";
-                link rel="stylesheet" href="/assets/css/main.css";
+                style { "html:not(.styles-loaded) { visibility: hidden; }" }
+                link
+                    rel="stylesheet"
+                    href="/assets/css/main.css"
+                    onload="document.documentElement.classList.add('styles-loaded')"
+                    onerror="document.documentElement.classList.add('styles-loaded')";
 
                 script defer src="/assets/js/main.js" {}
 

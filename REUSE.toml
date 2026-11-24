@@ -21,6 +21,7 @@ path = [
     "src/models/paste.rs",
     "src/models/profile.rs",
     "src/pages.rs",
+    "src/pages/authors.rs",
     "src/paste.rs",
     "src/paste/**/*.rs",
 ]
