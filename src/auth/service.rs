@@ -63,6 +63,7 @@ impl<'a> Service<'a> {
 
         Ok(OAuthSession {
             code_verifier: pkce.verifier,
+            code_challenge: pkce.challenge,
             state: nonce,
             redirect: "/profile".to_owned(),
             exp: Date::now().as_millis() / 1000 + 600,

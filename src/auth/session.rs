@@ -16,6 +16,7 @@ pub struct Session {
 pub struct OAuthSession {
     pub state: String,
     pub code_verifier: String,
+    pub code_challenge: String,
     pub redirect: String,
     pub exp: u64,
 }

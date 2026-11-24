@@ -3,9 +3,9 @@ version = 1
 [[annotations]]
 path = [
     "src/app.rs",
-    "src/app/app.rs",
     "src/app/error.rs",
     "src/app/request_logger.rs",
+    "src/app/router.rs",
     "src/app/state.rs",
     "src/auth.rs",
     "src/auth/github.rs",
@@ -19,11 +19,12 @@ path = [
     "src/lib.rs",
     "src/models.rs",
     "src/models/paste.rs",
-    "src/models/profile.rs",
     "src/pages.rs",
     "src/pages/authors.rs",
     "src/paste.rs",
     "src/paste/**/*.rs",
+    "src/rate_limit.rs",
+    "src/rate_limit/**/*.rs",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 SegfaultSommeliers"

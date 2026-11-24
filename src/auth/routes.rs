@@ -7,7 +7,6 @@ use crate::{
         AppError,
         AppState,
     },
-    auth,
     auth::{
         OAuthSession,
         Session,
@@ -126,11 +125,10 @@ pub async fn request(
         .redirect
         .filter(|v| safe_redirect(v))
         .unwrap_or_else(|| "/profile".into());
-    let challenge = auth::compute_code_challenge(&oauth.code_verifier);
     let url = state
         .auth_provider
         .get_auth_url(
-            &challenge,
+            &oauth.code_challenge,
             &oauth.state,
             &state.redirect_url,
             &["read:user"],
@@ -218,6 +216,6 @@ pub async fn profile(
         .profile_pastes(user_id)
         .await
         .map_err(Error::Service)?;
-    let pastes: Vec<_> = ids.iter().map(|id| Paste { id, code: "" }).collect();
+    let pastes: Vec<_> = ids.iter().map(|id| Paste { id }).collect();
     Ok(pages::profile(&session.login, &session.avatar_url, &pastes).into_response())
 }

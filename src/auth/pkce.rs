@@ -20,7 +20,6 @@ pub enum Error {
 
 pub struct Pkce {
     pub verifier: String,
-    #[allow(dead_code)]
     pub challenge: String,
 }
 

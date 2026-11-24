@@ -5,10 +5,10 @@
 mod app;
 mod auth;
 mod layouts;
-#[allow(dead_code, unused_imports)]
 mod models;
 mod pages;
 mod paste;
+mod rate_limit;
 
 use crate::app::App;
 use axum::response::Response;

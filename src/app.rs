@@ -2,16 +2,12 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-#[allow(clippy::module_inception)]
-mod app;
-#[allow(dead_code)]
 mod error;
-mod rate_limit;
 mod request_logger;
+mod router;
 mod state;
 
-pub use app::*;
 pub use error::*;
-pub use rate_limit::*;
 pub use request_logger::*;
+pub use router::*;
 pub use state::*;
